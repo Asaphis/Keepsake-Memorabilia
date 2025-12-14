@@ -80,9 +80,10 @@ app.use((req, res, next) => {
     await setupVite(httpServer, app);
   }
 
-  // Using port 8080 which we know works from our test server
+  // Use Render's PORT environment variable or default to 8080
+  // Bind to 0.0.0.0 in production for Render compatibility
   const port = parseInt(process.env.PORT || "8080", 10);
-  const host = "127.0.0.1";
+  const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1';
   
   httpServer.on('error', (error: NodeJS.ErrnoException) => {
     console.error('\n=== SERVER ERROR ===');
