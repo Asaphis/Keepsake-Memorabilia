@@ -78,8 +78,9 @@ function FloatingCard({ delay, x, y, rotation }: { delay: number; x: string; y: 
 
 export function MarketplaceHero() {
   return (
-    <section className="relative overflow-hidden py-12 md:py-20 lg:py-28">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#000708] via-[#0a0c10] to-[#181A1E]" />
+    <section className="relative overflow-hidden py-12 md:py-20 lg:py-28 bg-[#050505]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#AC0808]/10 via-[#050505] to-[#050505]" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
       
       <div 
         className="absolute inset-0 opacity-30"

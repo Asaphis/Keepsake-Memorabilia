@@ -14,7 +14,13 @@ import {
   Camera,
   Clock,
   TrendingUp,
-  Flame
+  Flame,
+  Users,
+  UserPlus,
+  MessageCircle,
+  ChevronRight,
+  Sparkles,
+  ShieldCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -49,6 +55,37 @@ export default function Marketplace() {
               </Button>
             </div>
           </div>
+
+          {/* Top Sellers Strip */}
+          <div className="flex overflow-x-auto pb-4 gap-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 items-center">
+             <div className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-full bg-[#1a1d22] border border-white/10">
+               <Button size="sm" className="h-7 px-3 bg-[#AC0808] hover:bg-[#8a0606] text-white">View All Sellers</Button>
+               <div className="flex items-center gap-1">
+                 <Button variant="outline" size="icon" className="w-7 h-7 border-white/10 text-white hover:bg-white/10">
+                   <UserPlus size={14} />
+                 </Button>
+                 <Button variant="outline" size="icon" className="w-7 h-7 border-white/10 text-white hover:bg-white/10">
+                   <MessageCircle size={14} />
+                 </Button>
+               </div>
+             </div>
+             <div className="w-px h-12 bg-white/10 mx-2" />
+             {mockSellers.map((seller) => (
+               <div key={seller.id} className="flex-shrink-0 flex flex-col items-center gap-2 cursor-pointer group">
+                 <div className="relative">
+                   <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-transparent to-transparent group-hover:from-[#AC0808] group-hover:to-orange-500 transition-all duration-300">
+                     <img src={seller.avatar} alt={seller.name} className="w-full h-full rounded-full object-cover border-2 border-[#181A1E]" />
+                   </div>
+                   {seller.verified && (
+                     <div className="absolute bottom-0 right-0 bg-blue-500 text-white text-[8px] p-0.5 rounded-full border-2 border-[#181A1E]">
+                       <ShieldCheck size={8} />
+                     </div>
+                   )}
+                 </div>
+                 <span className="text-xs font-medium text-gray-400 group-hover:text-white transition-colors max-w-[70px] truncate text-center">{seller.name}</span>
+               </div>
+             ))}
+          </div>
         </div>
 
         <section className="py-8 md:py-12 bg-gradient-to-r from-[#0f1115] via-[#12141a] to-[#181A1E] border-y border-white/5">
@@ -68,7 +105,7 @@ export default function Marketplace() {
 
         <section className="py-8 md:py-12">
           <div className="container mx-auto px-4">
-            <HorizontalSlider title="Trading Cards" icon={<CreditCard size={28} />}>
+            <HorizontalSlider title="Trading Cards" icon={<CreditCard size={28} />} accentColor="#3B82F6">
               {categoryItems['trading-cards'].map((item) => (
                 <ItemCard key={item.id} item={item} compact />
               ))}
@@ -78,8 +115,22 @@ export default function Marketplace() {
 
         <section className="py-8 md:py-12 bg-[#0f1115]">
           <div className="container mx-auto px-4">
-            <HorizontalSlider title="Signed Jerseys" icon={<Shirt size={28} />}>
+            <HorizontalSlider title="Signed Jerseys" icon={<Shirt size={28} />} accentColor="#F97316">
               {categoryItems['signed-jerseys'].map((item) => (
+                <ItemCard key={item.id} item={item} compact />
+              ))}
+            </HorizontalSlider>
+          </div>
+        </section>
+
+        <section className="py-8 md:py-12 bg-gradient-to-r from-yellow-500/5 via-[#0f1115] to-[#181A1E] border-y border-yellow-500/10 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
+          <div className="container mx-auto px-4 relative z-10">
+             <div className="flex items-center gap-2 mb-1">
+               <span className="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-500 text-[10px] font-bold uppercase tracking-wider border border-yellow-500/20">Sponsored</span>
+             </div>
+            <HorizontalSlider title="Premium Selections" icon={<Sparkles size={28} />} accentColor="#EAB308">
+              {allItems.slice(8, 14).map((item) => (
                 <ItemCard key={item.id} item={item} compact />
               ))}
             </HorizontalSlider>
@@ -88,7 +139,7 @@ export default function Marketplace() {
 
         <section className="py-8 md:py-12">
           <div className="container mx-auto px-4">
-            <HorizontalSlider title="Match Balls" icon={<CircleDot size={28} />}>
+            <HorizontalSlider title="Match Balls" icon={<CircleDot size={28} />} accentColor="#22C55E">
               {categoryItems['match-balls'].map((item) => (
                 <ItemCard key={item.id} item={item} compact />
               ))}
@@ -98,7 +149,7 @@ export default function Marketplace() {
 
         <section className="py-8 md:py-12 bg-[#0f1115]">
           <div className="container mx-auto px-4">
-            <HorizontalSlider title="Autographed Photos" icon={<Camera size={28} />}>
+            <HorizontalSlider title="Autographed Photos" icon={<Camera size={28} />} accentColor="#A855F7">
               {categoryItems['autographed-photos'].map((item) => (
                 <ItemCard key={item.id} item={item} compact />
               ))}
@@ -108,7 +159,7 @@ export default function Marketplace() {
 
         <section className="py-8 md:py-12">
           <div className="container mx-auto px-4">
-            <HorizontalSlider title="Vintage Collectibles" icon={<Clock size={28} />}>
+            <HorizontalSlider title="Vintage Collectibles" icon={<Clock size={28} />} accentColor="#D97706">
               {categoryItems['vintage'].map((item) => (
                 <ItemCard key={item.id} item={item} compact />
               ))}
@@ -116,20 +167,7 @@ export default function Marketplace() {
           </div>
         </section>
 
-        <section className="py-10 md:py-14 bg-[#0f1115] border-y border-white/5">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center gap-2 md:gap-3 mb-6 md:mb-8">
-              <TrendingUp size={28} className="text-[#AC0808]" />
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-white">Top Sellers</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {mockSellers.map((seller) => (
-                <SellerCard key={seller.id} seller={seller} />
-              ))}
-            </div>
-          </div>
-        </section>
+
       </main>
     </div>
   );

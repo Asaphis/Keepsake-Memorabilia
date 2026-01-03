@@ -7,13 +7,15 @@ interface HorizontalSliderProps {
   title: string;
   icon?: ReactNode;
   showArrows?: boolean;
+  accentColor?: string;
 }
 
 export function HorizontalSlider({ 
   children, 
   title, 
   icon,
-  showArrows = true 
+  showArrows = true,
+  accentColor = "#AC0808"
 }: HorizontalSliderProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -88,11 +90,26 @@ export function HorizontalSlider({
   return (
     <div className="relative group/slider">
       <div className="flex items-center justify-between mb-4 sm:mb-5 md:mb-6">
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-3 sm:gap-4">
           {icon && (
-            <span className="text-[#AC0808] [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6 md:[&>svg]:w-7 md:[&>svg]:h-7">
-              {icon}
-            </span>
+            <div 
+              className="relative flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl border transition-colors duration-300"
+              style={{
+                backgroundColor: `${accentColor}1A`, // 10% opacity
+                borderColor: `${accentColor}33`, // 20% opacity
+                boxShadow: `0 0 15px ${accentColor}33`
+              }}
+            >
+              <span 
+                className="[&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6 md:[&>svg]:w-7 md:[&>svg]:h-7 transition-colors duration-300"
+                style={{ 
+                  color: accentColor,
+                  filter: `drop-shadow(0 0 8px ${accentColor}80)`
+                }}
+              >
+                {icon}
+              </span>
+            </div>
           )}
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-display font-bold text-white">
             {title}
@@ -108,9 +125,24 @@ export function HorizontalSlider({
               whileTap={{ scale: 0.95 }}
               className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-300 border ${
                 canScrollLeft 
-                  ? 'bg-white/10 hover:bg-[#AC0808] text-white border-white/20 hover:border-[#AC0808]' 
+                  ? 'bg-white/10 text-white border-white/20' 
                   : 'bg-white/5 text-gray-600 border-white/10 cursor-not-allowed'
               }`}
+              style={canScrollLeft ? { 
+                borderColor: `${accentColor}40` 
+              } : {}}
+              onMouseEnter={(e) => {
+                if (canScrollLeft) {
+                  e.currentTarget.style.backgroundColor = accentColor;
+                  e.currentTarget.style.borderColor = accentColor;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (canScrollLeft) {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                }
+              }}
               aria-label="Scroll left"
             >
               <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
@@ -122,9 +154,24 @@ export function HorizontalSlider({
               whileTap={{ scale: 0.95 }}
               className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-300 border ${
                 canScrollRight 
-                  ? 'bg-white/10 hover:bg-[#AC0808] text-white border-white/20 hover:border-[#AC0808]' 
+                  ? 'bg-white/10 text-white border-white/20' 
                   : 'bg-white/5 text-gray-600 border-white/10 cursor-not-allowed'
               }`}
+              style={canScrollRight ? { 
+                borderColor: `${accentColor}40` 
+              } : {}}
+              onMouseEnter={(e) => {
+                if (canScrollRight) {
+                  e.currentTarget.style.backgroundColor = accentColor;
+                  e.currentTarget.style.borderColor = accentColor;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (canScrollRight) {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                }
+              }}
               aria-label="Scroll right"
             >
               <ChevronRight size={18} className="sm:w-5 sm:h-5" />

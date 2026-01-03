@@ -16,6 +16,7 @@ export interface Item {
   currentBid?: number;
   priceChange?: number;
   momentum?: 'High' | 'Medium' | 'Low';
+  proofs?: ('auth' | 'photo' | 'video' | 'coa')[];
 }
 
 export interface Seller {
@@ -72,9 +73,11 @@ export const mockStories: Story[] = [
   { id: '1', type: 'image', content: 'Just acquired a rare 1986 Fleer!', image: item1, timestamp: '2h ago', viewed: false },
   { id: '2', type: 'text', content: 'New graded cards arriving this week! Stay tuned for some amazing PSA 10s 🔥', timestamp: '4h ago', viewed: false },
   { id: '3', type: 'update', content: 'Price drop alert on vintage jerseys!', timestamp: '6h ago', viewed: true },
-  { id: '4', type: 'image', content: 'Behind the scenes at the grading facility', image: item2, timestamp: '8h ago', viewed: true },
-  { id: '5', type: 'text', content: 'Big announcement coming tomorrow! 🚀', timestamp: '12h ago', viewed: false },
+  { id: '4', type: 'image', content: 'Behind the scenes at the grading facility', image: item1, timestamp: '8h ago', viewed: true },
+  { id: '5', type: 'text', content: 'Big announcement coming tomorrow! 🚀', timestamp: '12h ago', viewed: true },
   { id: '6', type: 'update', content: 'Flash sale: 20% off all trading cards', timestamp: '1d ago', viewed: true },
+  { id: '7', type: 'image', content: 'Look at this beauty! 💎', image: item1, timestamp: '1d ago', viewed: true },
+  { id: '8', type: 'text', content: 'Who else is watching the finals tonight?', timestamp: '2d ago', viewed: true },
 ];
 
 export const mockSellerPosts: SellerPost[] = [
@@ -123,7 +126,8 @@ export const mockSellers: Seller[] = [
         isBidding: true,
         currentBid: 125000,
         priceChange: 12.5,
-        momentum: 'High'
+        momentum: 'High',
+        proofs: ['auth', 'photo', 'video', 'coa']
       },
       {
         id: '102',
@@ -134,7 +138,8 @@ export const mockSellers: Seller[] = [
         type: 'card',
         category: 'trading-cards',
         priceChange: 8.2,
-        momentum: 'High'
+        momentum: 'High',
+        proofs: ['auth', 'photo']
       },
       {
         id: '103',

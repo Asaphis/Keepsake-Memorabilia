@@ -1,259 +1,448 @@
+import { useState, useRef, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
-import { mockSellers, mockCollectors, mockDiscussions } from "@/lib/mockData";
+import { mockSellers, mockDiscussions } from "@/lib/mockData";
 import { Link } from "wouter";
 import { 
   ArrowRight, 
   Trophy, 
-  Package, 
-  Puzzle, 
   Globe, 
-  BarChart3,
   Users,
-  MessageSquare,
   Star,
-  Verified,
   Sparkles,
   TrendingUp,
   Zap,
-  Shield
+  ShieldCheck,
+  Package,
+  Puzzle,
+  BarChart3,
+  Search,
+  CheckCircle2,
+  MessageSquare,
+  MessageCircle,
+  ThumbsUp
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { HorizontalSlider } from "@/components/ui/HorizontalSlider";
 
-function FloatingHologram({ className, delay = 0 }: { className?: string; delay?: number }) {
+// --- Components ---
+
+function LiveTicker() {
+  const tickerItems = [
+    { label: "MJ '98 Jersey", value: "+12.5%", color: "text-green-400" },
+    { label: "LeBron Rookie Auto", value: "Sold $52k", color: "text-white" },
+    { label: "Brady TB12 Helmet", value: "+5.2%", color: "text-green-400" },
+    { label: "Kobe '09 Finals Ball", value: "Sold $18.5k", color: "text-white" },
+    { label: "Mantle '52 Topps", value: "Trending", color: "text-yellow-400" },
+    { label: "Ohtani Signed Bat", value: "+8.4%", color: "text-green-400" },
+    { label: "Messi WC Kit", value: "Sold $85k", color: "text-white" },
+  ];
+
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 1, delay }}
-      className={`absolute pointer-events-none ${className}`}
-    >
-      <div className="relative">
-        <div className="w-32 h-32 md:w-48 md:h-48 rounded-2xl bg-gradient-to-br from-purple-500/20 via-blue-500/20 to-cyan-500/20 backdrop-blur-sm border border-white/10 animate-float-slow">
-          <div className="absolute inset-0 rounded-2xl holographic-border opacity-50" />
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-500/10 to-blue-500/10 animate-pulse-ring" />
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function FloatingCard({ className, delay = 0, image }: { className?: string; delay?: number; image?: string }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay }}
-      className={`absolute pointer-events-none ${className}`}
-    >
-      <div className="relative animate-float-delayed">
-        <div className="w-24 h-32 md:w-32 md:h-44 rounded-xl bg-gradient-to-br from-[#22252b] to-[#15171a] border border-white/10 overflow-hidden shadow-2xl">
-          {image && (
-            <img src={image} alt="" className="w-full h-full object-cover opacity-60" />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-          <div className="absolute inset-0 rounded-xl animate-holographic-glow opacity-40" style={{
-            boxShadow: '0 0 30px rgba(139, 92, 246, 0.3), 0 0 60px rgba(59, 130, 246, 0.2)'
-          }} />
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function HeroSection() {
-  return (
-    <div className="relative min-h-screen w-full overflow-hidden flex items-center justify-center">
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0b0d] via-[#0f1115] to-[#181A1E]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(139,92,246,0.15)_0%,_transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(59,130,246,0.15)_0%,_transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(172,8,8,0.1)_0%,_transparent_60%)]" />
-        
-        <div 
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: 'url("https://www.transparenttextures.com/patterns/carbon-fibre.png")',
-          }}
-        />
-        
-        <div className="absolute top-10 left-10 w-96 h-96 bg-purple-500/20 rounded-full blur-[150px] animate-pulse-ring" />
-        <div className="absolute top-40 right-20 w-72 h-72 bg-blue-500/20 rounded-full blur-[120px] animate-pulse-ring" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-cyan-500/15 rounded-full blur-[130px] animate-pulse-ring" style={{ animationDelay: '2s' }} />
-        <div className="absolute bottom-40 right-1/3 w-64 h-64 bg-[#AC0808]/20 rounded-full blur-[100px]" />
-      </div>
-
-      <FloatingHologram className="top-20 left-[5%] hidden lg:block" delay={0.5} />
-      <FloatingHologram className="top-40 right-[8%] hidden lg:block" delay={0.8} />
-      <FloatingCard className="bottom-32 left-[10%] hidden lg:block" delay={1} image="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=200&h=300&fit=crop" />
-      <FloatingCard className="top-1/3 right-[12%] hidden lg:block" delay={1.2} image="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=200&h=300&fit=crop" />
-
-      <div className="relative z-10 container mx-auto px-4 text-center py-20 md:py-0">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-        >
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 mb-8 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-cyan-500/10 backdrop-blur-md border border-white/10 rounded-full"
-          >
-            <Sparkles size={16} className="text-purple-400" />
-            <span className="text-sm md:text-base text-gray-300 font-medium">The Future of Sports Collectibles</span>
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-          </motion.div>
-
-          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-display font-bold text-white mb-6 md:mb-8 tracking-tight leading-[1.1]">
-            <motion.span
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="block"
-            >
-              Track, Analyze & Trade
-            </motion.span>
-            <motion.span 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400"
-            >
-              Sports Memorabilia
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
-              className="block text-gray-300"
-            >
-              Like Digital Assets
-            </motion.span>
-          </h1>
-
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.9 }}
-            className="text-lg md:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto mb-10 md:mb-14 font-light px-4 leading-relaxed"
-          >
-            Real-time price tracking, verified collectors, and a global marketplace for premium sports collectibles.
-          </motion.p>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.1 }}
-            className="flex flex-col sm:flex-row gap-4 md:gap-5 justify-center items-center px-4"
-          >
-            <Link href="/marketplace">
-              <Button 
-                size="lg" 
-                className="w-full sm:w-auto bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white hover:from-purple-500 hover:via-blue-500 hover:to-cyan-500 font-bold px-8 md:px-12 py-6 md:py-8 text-lg md:text-xl rounded-full shadow-2xl transition-all hover:scale-105 holographic-glow-hover"
-                style={{
-                  boxShadow: '0 0 40px rgba(139, 92, 246, 0.3), 0 0 80px rgba(59, 130, 246, 0.2)'
-                }}
-              >
-                Explore Market <ArrowRight size={20} className="ml-2" />
-              </Button>
-            </Link>
-            <Link href="/search">
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10 hover:text-white font-medium px-8 md:px-12 py-6 md:py-8 text-lg md:text-xl rounded-full backdrop-blur-md bg-white/5 holographic-glow-hover"
-              >
-                View Collections
-              </Button>
-            </Link>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.5 }}
-            className="flex flex-wrap justify-center gap-6 md:gap-10 mt-14 md:mt-20 text-gray-400"
-          >
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10">
-              <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse" />
-              <span className="text-sm md:text-base">Live Trading</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10">
-              <Verified size={16} className="text-blue-400" />
-              <span className="text-sm md:text-base">Verified Sellers</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10">
-              <Star size={16} className="text-yellow-400" />
-              <span className="text-sm md:text-base">10K+ Collectors</span>
-            </div>
-          </motion.div>
-        </motion.div>
-      </div>
-
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="flex flex-col items-center gap-2 text-gray-500"
-        >
-          <span className="text-xs uppercase tracking-widest">Scroll to explore</span>
-          <div className="w-6 h-10 rounded-full border-2 border-gray-500/50 flex justify-center pt-2">
-            <motion.div 
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              className="w-1.5 h-1.5 bg-purple-400 rounded-full"
-            />
+    <div className="w-full bg-[#AC0808] border-y border-red-900 overflow-hidden py-2 relative z-20">
+      <div className="flex animate-marquee whitespace-nowrap gap-12">
+        {[...tickerItems, ...tickerItems, ...tickerItems].map((item, i) => (
+          <div key={i} className="flex items-center gap-2 text-xs md:text-sm font-medium text-white/90">
+            <span className="opacity-70 uppercase tracking-wider">{item.label}</span>
+            <span className={`font-bold ${item.color}`}>{item.value}</span>
           </div>
-        </motion.div>
+        ))}
       </div>
     </div>
   );
 }
 
-function ConceptSection() {
-  const concepts = [
+function FloatingCard({ delay, x, y, rotation, src }: { delay: number; x: string; y: string; rotation: number; src: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ 
+        opacity: [0.3, 0.6, 0.3],
+        scale: [0.95, 1, 0.95],
+        y: [-10, 10, -10],
+        rotateY: [rotation - 5, rotation + 5, rotation - 5],
+      }}
+      transition={{
+        duration: 6,
+        delay,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+      className="absolute w-24 h-36 md:w-32 md:h-48 lg:w-40 lg:h-56 rounded-xl overflow-hidden"
+      style={{ 
+        left: x, 
+        top: y,
+        transform: `perspective(1000px) rotateY(${rotation}deg)`,
+        transformStyle: 'preserve-3d',
+      }}
+    >
+      <img src={src} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#AC0808]/20 via-[#ff4d4d]/10 to-transparent backdrop-blur-sm border border-white/10" />
+      <div 
+        className="absolute inset-0 opacity-40"
+        style={{
+          background: 'linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)',
+          backgroundSize: '200% 200%',
+          animation: 'holographic 4s ease-in-out infinite',
+        }}
+      />
+    </motion.div>
+  );
+}
+
+function CinematicHero() {
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 500], [0, 150]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+
+  return (
+    <section className="relative h-[90vh] min-h-[600px] w-full overflow-hidden flex flex-col items-center justify-center bg-[#050505]">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#AC0808]/10 via-[#050505] to-[#050505]" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+      
+      {/* Floating Cards Animation */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <FloatingCard delay={0} x="10%" y="20%" rotation={-15} src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=400&h=600&fit=crop" />
+        <FloatingCard delay={2} x="80%" y="15%" rotation={15} src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=400&h=600&fit=crop" />
+        <FloatingCard delay={4} x="15%" y="70%" rotation={-10} src="https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=400&h=600&fit=crop" />
+        <FloatingCard delay={1.5} x="85%" y="65%" rotation={12} src="https://images.unsplash.com/photo-1505842465776-3acb1841c736?w=400&h=600&fit=crop" />
+      </div>
+
+      {/* Spotlight Effect */}
+      <motion.div 
+        style={{ opacity }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-red-600/10 rounded-full blur-[120px] pointer-events-none" 
+      />
+
+      <div className="container relative z-10 px-4 flex flex-col items-center text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="mb-8"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-6">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <span className="text-[10px] md:text-xs font-medium text-gray-300 uppercase tracking-widest">The Vault is Open</span>
+          </div>
+          
+          <h1 className="text-5xl sm:text-6xl md:text-8xl font-display font-bold text-white tracking-tighter leading-[1.1] mb-6">
+            Track, Analyze & Trade <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#AC0808] via-[#ff4d4d] to-[#AC0808] animate-gradient-x">
+              Sports Memorabilia
+            </span> <br className="hidden md:block" />
+            Like Digital Assets
+          </h1>
+          
+          <p className="text-lg md:text-xl text-gray-400 max-w-xl mx-auto font-light leading-relaxed">
+            Real-time price tracking, verified collectors, and a global marketplace for premium sports collectibles.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="flex flex-col sm:flex-row gap-4 w-full max-w-md justify-center"
+        >
+          <Link href="/marketplace">
+            <Button size="lg" className="bg-[#AC0808] text-white hover:bg-[#8a0606] font-bold px-8 h-14 rounded-full text-lg shadow-[0_0_20px_rgba(172,8,8,0.4)] hover:shadow-[0_0_30px_rgba(172,8,8,0.6)] transition-all hover:scale-105">
+              Explore Market <ArrowRight className="ml-2" />
+            </Button>
+          </Link>
+          <Link href="/collections">
+             <Button variant="outline" size="lg" className="border-white/10 text-white hover:bg-white/5 h-14 rounded-full text-lg px-8">
+               View Collections
+             </Button>
+          </Link>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function DomeGallerySection() {
+  const images = mockSellers.flatMap(s => s.items.map(i => i.image)).slice(0, 12);
+  const rings = [0, 1, 2];
+  return (
+    <section className="py-16 md:py-20 bg-[#050505] overflow-hidden">
+      <div className="container mx-auto px-4 mb-10">
+        <div className="flex items-center gap-3">
+          <Globe size={24} className="text-[#AC0808]" />
+          <h2 className="text-2xl md:text-3xl font-display font-bold text-white">Global Dome Gallery</h2>
+        </div>
+      </div>
+      <div className="relative h-[420px] md:h-[560px]">
+        {rings.map((r) => (
+          <motion.div
+            key={r}
+            initial={{ rotate: 0 }}
+            animate={{ rotate: 360 }}
+            transition={{ duration: 60 - r * 10, repeat: Infinity, ease: "linear" }}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{ width: `${280 + r * 140}px`, height: `${280 + r * 140}px` }}
+          >
+            <div className="relative w-full h-full">
+              {images.slice(r * 4, r * 4 + 4).map((src, i) => {
+                const angle = (i / 4) * 360;
+                const radius = (280 + r * 140) / 2;
+                const x = Math.cos((angle * Math.PI) / 180) * radius;
+                const y = Math.sin((angle * Math.PI) / 180) * radius;
+                return (
+                  <div
+                    key={i}
+                    className="absolute w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden border border-white/10 shadow-md"
+                    style={{ left: `calc(50% + ${x}px - 48px)`, top: `calc(50% + ${y}px - 48px)` }}
+                  >
+                    <img src={src} alt="" className="w-full h-full object-cover" />
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function CommunitySection() {
+  // Adapt mock data to component structure
+  const rawDiscussions = mockDiscussions || [];
+  const discussions = rawDiscussions.length > 0 ? rawDiscussions.slice(0, 3).map(d => ({
+      id: d.id,
+      title: d.title,
+      author: { name: d.author, avatar: d.avatar },
+      replies: d.replies,
+      likes: Math.floor(Math.random() * 200) + 20,
+      category: "Community"
+  })) : [
     {
-      icon: <BarChart3 size={32} />,
-      title: "Price Movement Algorithm",
-      description: "Track real-time market trends with our proprietary price analysis. See exactly how your assets perform over time.",
-      gradient: "from-green-500 to-emerald-500",
-      bgGlow: "bg-green-500/20"
+      id: '1',
+      title: "The future of card grading: AI vs Human",
+      author: { name: "Collector99", avatar: "https://i.pravatar.cc/150?u=1" },
+      replies: 45,
+      likes: 120,
+      category: "General"
     },
     {
-      icon: <Trophy size={32} />,
-      title: "Player Stats Integration",
-      description: "Athlete performance data directly affects collectible values. Stay ahead with live sports analytics.",
-      gradient: "from-yellow-500 to-orange-500",
-      bgGlow: "bg-yellow-500/20"
+      id: '2',
+      title: "Is the '90s insert market overheating?",
+      author: { name: "VintageKing", avatar: "https://i.pravatar.cc/150?u=2" },
+      replies: 32,
+      likes: 85,
+      category: "Market Watch"
     },
     {
-      icon: <Package size={32} />,
-      title: "Buy / Sell / Trade / Hold",
-      description: "Manage your collection like a portfolio. Make strategic decisions based on market momentum.",
-      gradient: "from-blue-500 to-cyan-500",
-      bgGlow: "bg-blue-500/20"
-    },
-    {
-      icon: <Puzzle size={32} />,
-      title: "Multi-Category Collections",
-      description: "From trading cards to signed jerseys, match balls to vintage photos. All asset classes in one place.",
-      gradient: "from-purple-500 to-pink-500",
-      bgGlow: "bg-purple-500/20"
-    },
-    {
-      icon: <Globe size={32} />,
-      title: "Community & Network",
-      description: "Connect with collectors, businesses, and sellers worldwide. Build your reputation in the market.",
-      gradient: "from-[#AC0808] to-red-500",
-      bgGlow: "bg-[#AC0808]/20"
+      id: '3',
+      title: "Showoff: My new mantlepiece display",
+      author: { name: "SportsFan", avatar: "https://i.pravatar.cc/150?u=3" },
+      replies: 18,
+      likes: 210,
+      category: "Showcase"
     }
   ];
 
   return (
-    <section className="py-20 md:py-32 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0b0d] via-[#0f1115] to-[#181A1E]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(139,92,246,0.08)_0%,_transparent_70%)]" />
+    <section className="py-16 md:py-24 bg-[#0a0b0d] border-t border-white/5">
+      <div className="container mx-auto px-4">
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-3">
+            <MessageSquare size={24} className="text-[#AC0808]" />
+            <h2 className="text-2xl md:text-4xl font-display font-bold text-white">Community Insights</h2>
+          </div>
+          <div className="flex flex-col md:flex-row gap-3">
+            <input type="file" accept="image/*,video/*" className="w-full md:w-1/2 text-sm file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-white/10 file:text-white file:hover:bg-white/20 bg-[#15171a] border border-white/10 rounded-lg p-2 text-white" />
+            <Button className="bg-[#AC0808] hover:bg-[#8a0606]">Upload</Button>
+          </div>
+        </div>
+        <div className="flex items-center justify-between mb-10">
+           <div className="flex items-center gap-3">
+             <MessageSquare size={24} className="text-[#AC0808]" />
+             <h2 className="text-2xl md:text-4xl font-display font-bold text-white">Community Insights</h2>
+           </div>
+           <Button variant="ghost" className="text-gray-400 hover:text-white">View All Discussions <ArrowRight size={16} className="ml-2" /></Button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+           {discussions.map((d) => (
+             <div key={d.id} className="group p-6 rounded-2xl bg-[#15171a] border border-white/5 hover:border-red-500/20 transition-all duration-300 hover:translate-y-[-2px]">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <img src={d.author.avatar} alt={d.author.name} className="w-10 h-10 rounded-full border border-white/10" />
+                    <div>
+                      <div className="text-sm font-medium text-white group-hover:text-red-400 transition-colors">{d.author.name}</div>
+                      <div className="text-xs text-gray-500">{d.category}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <h3 className="text-lg font-bold text-white mb-4 line-clamp-2 leading-snug">
+                  {d.title}
+                </h3>
+                
+                <div className="flex items-center gap-6 text-gray-400 text-sm">
+                  <div className="flex items-center gap-2">
+                    <MessageCircle size={16} />
+                    <span>{d.replies}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ThumbsUp size={16} />
+                    <span>{d.likes}</span>
+                  </div>
+                </div>
+             </div>
+           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TrustSection() {
+  const partners = ["PSA", "Beckett", "JSA", "SGC", "CGC"];
+  
+  return (
+    <section className="py-10 border-y border-white/5 bg-[#0a0b0d]">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 opacity-60 hover:opacity-100 transition-opacity duration-500">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="text-white" size={24} />
+            <span className="text-sm font-medium text-gray-300 uppercase tracking-widest">Guaranteed Authenticity</span>
+          </div>
+          <div className="h-px w-full md:w-auto md:h-8 bg-white/10 md:flex-1" />
+          <div className="flex flex-wrap justify-center gap-8 grayscale hover:grayscale-0 transition-all duration-500">
+            {partners.map(p => (
+              <span key={p} className="text-lg font-display font-bold text-gray-400">{p}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CollectionsSection() {
+  const collections = mockSellers.map((s) => ({
+    id: s.id,
+    title: s.name,
+    subtitle: s.handle,
+    cover: s.items[0]?.image,
+    count: s.items.length,
+    avatar: s.avatar,
+    verified: s.verified,
+  }));
+
+  return (
+    <section className="py-16 bg-[#0f1115]">
+      <div className="container mx-auto px-4">
+        <HorizontalSlider title="Featured Collections" icon={<Star size={24} />} accentColor="#EAB308">
+          {collections.map((c) => (
+            <div key={c.id} className="snap-start flex-shrink-0 w-[260px] xs:w-[280px] sm:w-[320px]">
+              <div className="group relative rounded-2xl overflow-hidden bg-[#1a1d22] border border-white/5 hover:border-white/10 transition-all duration-300">
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <img 
+                    src={c.cover} 
+                    alt={c.title} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300" />
+                  <div className="absolute top-3 right-3 px-2 py-1 rounded-full text-[10px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/10">
+                    {c.count} ITEMS
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center gap-3">
+                    <img src={c.avatar} alt={c.title} className="w-9 h-9 rounded-full border border-white/10" />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-white font-medium text-sm truncate group-hover:text-red-400 transition-colors">
+                        {c.title}
+                      </h4>
+                      <p className="text-gray-500 text-xs truncate">{c.subtitle}</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between opacity-60 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">Collection</span>
+                    <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2 text-white hover:bg-white/10">
+                      View Gallery
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </HorizontalSlider>
+      </div>
+    </section>
+  );
+}
+
+function StatsSection() {
+  const stats = [
+    { value: "$2.5B+", label: "Total Volume", icon: <TrendingUp size={24} /> },
+    { value: "10K+", label: "Active Collectors", icon: <Users size={24} /> },
+    { value: "50K+", label: "Items Listed", icon: <Package size={24} /> },
+    { value: "99.9%", label: "Secure Trades", icon: <ShieldCheck size={24} /> },
+  ];
+
+  return (
+    <section className="py-16 md:py-20 relative overflow-hidden border-y border-white/5 bg-[#050505]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-900/10 via-[#050505] to-[#050505]" />
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 text-center">
+          {stats.map((stat, i) => (
+            <div key={i} className="flex flex-col items-center">
+              <div className="mb-4 p-3 rounded-full bg-white/5 text-[#AC0808] border border-white/10">
+                {stat.icon}
+              </div>
+              <h3 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">{stat.value}</h3>
+              <p className="text-gray-400 text-sm uppercase tracking-wider">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DetailedHowItWorks() {
+  const concepts = [
+    {
+      icon: <BarChart3 className="w-6 h-6 md:w-9 md:h-9" />,
+      title: "Price Movement Algorithm",
+      description: "Track real-time market trends with our proprietary price analysis. See exactly how your assets perform over time.",
+      gradient: "from-green-500 to-emerald-500",
+    },
+    {
+      icon: <Trophy className="w-6 h-6 md:w-9 md:h-9" />,
+      title: "Player Stats Integration",
+      description: "Athlete performance data directly affects collectible values. Stay ahead with live sports analytics.",
+      gradient: "from-yellow-500 to-orange-500",
+    },
+    {
+      icon: <Package className="w-6 h-6 md:w-9 md:h-9" />,
+      title: "Buy / Sell / Trade / Hold",
+      description: "Manage your collection like a portfolio. Make strategic decisions based on market momentum.",
+      gradient: "from-blue-500 to-cyan-500",
+    },
+    {
+      icon: <Puzzle className="w-6 h-6 md:w-9 md:h-9" />,
+      title: "Multi-Category Collections",
+      description: "From trading cards to signed jerseys, match balls to vintage photos. All asset classes in one place.",
+      gradient: "from-purple-500 to-pink-500",
+    },
+    {
+      icon: <Globe className="w-6 h-6 md:w-9 md:h-9" />,
+      title: "Community & Network",
+      description: "Connect with collectors, businesses, and sellers worldwide. Build your reputation in the market.",
+      gradient: "from-[#AC0808] to-red-500",
+    }
+  ];
+
+  return (
+    <section className="py-20 md:py-32 relative overflow-hidden bg-[#0a0b0d]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#AC0808]/10 via-[#0a0b0d] to-[#0a0b0d]" />
       
       <div className="container mx-auto px-4 relative z-10">
         <motion.div 
@@ -263,9 +452,9 @@ function ConceptSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16 md:mb-20"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-purple-500/10 border border-purple-500/20 rounded-full">
-            <Zap size={14} className="text-purple-400" />
-            <span className="text-sm text-purple-300">Platform Features</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 bg-white/5 border border-white/10 rounded-full backdrop-blur-sm">
+            <Zap size={14} className="text-yellow-400" />
+            <span className="text-sm text-gray-300">Platform Features</span>
           </div>
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-4 md:mb-6">How It Works</h2>
           <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
@@ -283,153 +472,12 @@ function ConceptSection() {
               transition={{ delay: index * 0.1, duration: 0.6 }}
               className="group relative"
             >
-              <div className={`absolute inset-0 ${concept.bgGlow} rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              <div className="relative p-8 md:p-10 rounded-3xl bg-gradient-to-br from-[#1a1d22] to-[#15171a] border border-white/5 group-hover:border-white/10 transition-all duration-500 h-full holographic-glow-hover">
-                <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${concept.gradient} mb-6 text-white shadow-lg`}>
+              <div className="relative p-6 md:p-8 rounded-3xl bg-[#15171a] border border-white/5 group-hover:border-red-500/30 transition-all duration-300 h-full hover:translate-y-[-4px] hover:shadow-[0_10px_30px_rgba(172,8,8,0.1)] flex flex-col items-start">
+                <div className={`w-12 h-12 md:w-20 md:h-20 flex items-center justify-center rounded-2xl bg-gradient-to-br ${concept.gradient} mb-5 md:mb-6 text-white shadow-lg shrink-0`}>
                   {concept.icon}
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-3">{concept.title}</h3>
-                <p className="text-gray-400 leading-relaxed">{concept.description}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function StatsSection() {
-  const stats = [
-    { value: "$2.5B+", label: "Total Volume", icon: <TrendingUp size={24} /> },
-    { value: "10K+", label: "Active Collectors", icon: <Users size={24} /> },
-    { value: "50K+", label: "Items Listed", icon: <Package size={24} /> },
-    { value: "99.9%", label: "Secure Trades", icon: <Shield size={24} /> },
-  ];
-
-  return (
-    <section className="py-16 md:py-24 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-blue-500/5 to-cyan-500/5" />
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="text-center p-6 md:p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 holographic-glow-hover"
-            >
-              <div className="inline-flex p-3 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 text-purple-400 mb-4">
-                {stat.icon}
-              </div>
-              <div className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white mb-2">{stat.value}</div>
-              <div className="text-gray-400 text-sm md:text-base">{stat.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function TopCollectorsSection() {
-  return (
-    <section className="py-16 md:py-24 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#181A1E] to-[#0f1115]" />
-      <div className="container mx-auto px-4 relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="flex items-center gap-3 mb-8"
-        >
-          <Users size={28} className="text-purple-400" />
-          <h2 className="text-2xl md:text-4xl font-display font-bold text-white">Top Collectors</h2>
-        </motion.div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
-          {mockCollectors.map((collector, index) => (
-            <motion.div
-              key={collector.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.05 }}
-              className="group p-4 md:p-5 rounded-2xl bg-gradient-to-br from-[#22252b] to-[#1a1d22] border border-white/5 hover:border-purple-500/30 transition-all duration-300 holographic-glow-hover"
-            >
-              <div className="flex flex-col items-center text-center">
-                <div className="relative mb-3">
-                  <img
-                    src={collector.avatar}
-                    alt={collector.name}
-                    className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover border-2 border-purple-500/50"
-                  />
-                  {collector.verified && (
-                    <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-0.5">
-                      <Verified size={10} className="text-white" />
-                    </div>
-                  )}
-                </div>
-                <h4 className="text-white font-bold text-sm truncate w-full">{collector.name}</h4>
-                <p className="text-gray-500 text-xs truncate w-full mb-2">{collector.handle}</p>
-                <div className="flex items-center gap-3 text-xs text-gray-400">
-                  <span>{collector.collections} items</span>
-                  <span>{(collector.followers / 1000).toFixed(1)}K</span>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function DiscussionsSection() {
-  return (
-    <section className="py-16 md:py-24 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[#0f1115]" />
-      <div className="container mx-auto px-4 relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="flex items-center gap-3 mb-8"
-        >
-          <MessageSquare size={28} className="text-blue-400" />
-          <h2 className="text-2xl md:text-4xl font-display font-bold text-white">Community Discussions</h2>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          {mockDiscussions.map((discussion, index) => (
-            <motion.div
-              key={discussion.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="group p-5 md:p-6 rounded-2xl bg-gradient-to-br from-[#22252b] to-[#1a1d22] border border-white/5 hover:border-blue-500/30 transition-all duration-300 cursor-pointer holographic-glow-hover"
-            >
-              <div className="flex items-start gap-4">
-                <img
-                  src={discussion.avatar}
-                  alt={discussion.author}
-                  className="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-white/10"
-                />
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-white font-medium text-base md:text-lg group-hover:text-blue-400 transition-colors line-clamp-2 mb-2">
-                    {discussion.title}
-                  </h4>
-                  <div className="flex items-center gap-3 text-sm text-gray-500">
-                    <span>{discussion.author}</span>
-                    <span>•</span>
-                    <span>{discussion.replies} replies</span>
-                    <span>•</span>
-                    <span>{discussion.timestamp}</span>
-                  </div>
-                </div>
+                <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-red-400 transition-colors">{concept.title}</h3>
+                <p className="text-gray-400 leading-relaxed text-sm md:text-base">{concept.description}</p>
               </div>
             </motion.div>
           ))}
@@ -442,31 +490,24 @@ function DiscussionsSection() {
 function CTASection() {
   return (
     <section className="py-20 md:py-32 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 via-blue-600/20 to-cyan-600/20" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(139,92,246,0.2)_0%,_transparent_60%)]" />
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
-      
-      <div className="container mx-auto px-4 text-center relative z-10">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#AC0808] to-[#050505]" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+      <div className="container mx-auto px-4 relative z-10 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-4 md:mb-6">
+          <h2 className="text-4xl md:text-6xl font-display font-bold text-white mb-6">
             Ready to Start Your Portfolio?
           </h2>
-          <p className="text-lg md:text-xl text-gray-300 mb-10 md:mb-12 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10">
             Join thousands of collectors trading securely on the world's premier sports memorabilia marketplace.
           </p>
           <Link href="/marketplace">
-            <Button 
-              size="lg"
-              className="bg-white text-[#181A1E] hover:bg-gray-100 font-bold px-10 md:px-14 py-6 md:py-8 text-lg md:text-xl rounded-full shadow-2xl transition-all hover:scale-105"
-              style={{
-                boxShadow: '0 0 60px rgba(255, 255, 255, 0.3)'
-              }}
-            >
-              Get Started <ArrowRight size={20} className="ml-2" />
+            <Button size="lg" className="bg-white text-[#AC0808] hover:bg-gray-100 font-bold px-8 h-12 rounded-full text-lg shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+              Get Started <ArrowRight className="ml-2" />
             </Button>
           </Link>
         </motion.div>
@@ -477,17 +518,17 @@ function CTASection() {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#0a0b0d] pb-20 md:pb-0">
+    <div className="min-h-screen bg-[#050505] selection:bg-red-500/30 text-white">
       <Navbar />
-      
-      <main>
-        <HeroSection />
-        <ConceptSection />
-        <StatsSection />
-        <TopCollectorsSection />
-        <DiscussionsSection />
-        <CTASection />
-      </main>
+      <CinematicHero />
+      <LiveTicker />
+      <TrustSection />
+      <DomeGallerySection />
+      <CollectionsSection />
+      <StatsSection />
+      <DetailedHowItWorks />
+      <CommunitySection />
+      <CTASection />
     </div>
   );
 }
